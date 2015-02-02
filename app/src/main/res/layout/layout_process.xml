@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/activity_main_button_toggle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/ui_background"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:onClick="onStart"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp"
+        android:text="시작"
+        android:textColor="@color/ui_foreground" />
+
+    <Button
+	        android:id="@+id/activity_main_button_change"
+	        android:layout_width="match_parent"
+        	android:layout_height="wrap_content"
+        	android:layout_marginTop="10dp"
+        	android:layout_marginLeft="10dp"
+        	android:layout_marginRight="10dp"
+	        android:onClick="changePassword"
+	        android:textColor="@color/ui_foreground"
+	        android:background="@color/ui_background"
+	        android:minWidth="0dp"
+	        android:minHeight="0dp"
+	        android:paddingLeft="10dp"
+	        android:paddingRight="10dp"
+	        android:paddingTop="5dp"
+	        android:paddingBottom="5dp"
+	        android:text="비밀번호 변경" />
+    
+    <LinearLayout 
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="현재 IP 주소 : "
+            android:textColor="#ddeeff"
+            android:textSize="20sp"/>
+        
+	    <TextView
+	        android:id="@+id/activity_main_textView_IP"
+	        android:layout_weight="1"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:gravity="center"
+	        android:text="1.232.77.18"
+	        android:textColor="@color/foreground"
+	        android:textSize="20sp" />
+        
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="10dp">
+
+	    <ScrollView
+	        android:layout_weight="1"
+	        android:id="@+id/activity_main_scrollView_scrollView"
+	        android:layout_width="fill_parent"
+	        android:layout_height="0dp"
+	        android:layout_marginBottom="5dp" >
+	
+	        <TextView
+	            android:id="@+id/activity_main_textView_log"
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent"
+	            android:text=""
+	            android:textColor="@color/foreground" />
+	    </ScrollView>
+	
+	    <LinearLayout
+	        android:orientation="vertical"
+	        android:id="@+id/activity_main_webView_webView"
+	        android:layout_weight="1"
+	        android:layout_width="match_parent"
+	        android:layout_height="0dp" >
+	<!--MEMORY LEAKS
+	        <WebView
+	            android:id="@+id/activity_main_webView_webView"
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent"
+	            android:visibility="visible" />
+	              -->
+	    </LinearLayout>
+        
+    </LinearLayout>
+
+</LinearLayout>
