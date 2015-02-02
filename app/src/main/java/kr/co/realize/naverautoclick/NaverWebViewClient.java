@@ -1,4 +1,4 @@
-package kr.co.realize.naverautoclick;
+﻿package kr.co.realize.naverautoclick;
 
 import java.util.concurrent.BlockingQueue;
 

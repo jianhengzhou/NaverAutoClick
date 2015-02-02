@@ -1,4 +1,4 @@
-package kr.co.realize.naverautoclick;
+ï»¿package kr.co.realize.naverautoclick;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -61,7 +61,7 @@ public class MainActivity extends ActionBarActivity implements TabListener {
 	private int max_item = 30;
 	private static final boolean SHOW_WEBVIEW = true;
 	private Calendar expire_date;//new GregorianCalendar(2015, 1, 2);
-	private static final String DEFAULT_PASSWORD = "0000";//"º£½ºÆ®·Îµ©2014";
+	private static final String DEFAULT_PASSWORD = "0000";//"ë² ìŠ¤íŠ¸ë¡œë€2014";
 	private static final int VERSION = 8;
 	Handler handler = new Handler();
 	//public static EditText editText_query, editText_url, editText_time;
@@ -95,13 +95,13 @@ public class MainActivity extends ActionBarActivity implements TabListener {
 				int version = Integer.parseInt(Jsoup.connect(URL_PREFIX + "/version.php").get().text());
 				if (version > VERSION) {
 					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL_PREFIX + "/NaverAutoClick.apk")));
-					throw new Exception("»õ·Î¿î ¹öÀüÀÌ ÀÖ½À´Ï´Ù.");
+					throw new Exception("ìƒˆë¡œìš´ ë²„ì „ì´ ìˆìŠµë‹ˆë‹¤.");
 				}
 				
 				String jsonData = Jsoup.connect(URL_PREFIX + "/validate.php").data("phone", line1Number).post().text();
 				
 				if (jsonData.equals("none")) {
-					throw new Exception("µî·ÏµÇÁö ¾ÊÀº »ç¿ëÀÚ ÀÔ´Ï´Ù.");
+					throw new Exception("ë“±ë¡ë˜ì§€ ì•Šì€ ì‚¬ìš©ì ì…ë‹ˆë‹¤.");
 				}
 				
 				JSONObject data = new JSONObject(jsonData);
@@ -115,11 +115,11 @@ public class MainActivity extends ActionBarActivity implements TabListener {
 				
 				long timestamp = new JSONObject(Jsoup.connect("http://www.convert-unix-time.com/api?timestamp=now").get().text()).optLong("timestamp");
 				if (timestamp >= expire_date.getTimeInMillis() / 1000) {
-					throw new Exception("»ç¿ë ±â°£ÀÌ Áö³µ½À´Ï´Ù.");
+					throw new Exception("ì‚¬ìš© ê¸°ê°„ì´ ì§€ë‚¬ìŠµë‹ˆë‹¤.");
 				}
 				
 				if (ban) {
-					throw new Exception("»ç¿ë Â÷´ÜµÇ¾ú½À´Ï´Ù.");
+					throw new Exception("ì‚¬ìš© ì°¨ë‹¨ë˜ì—ˆìŠµë‹ˆë‹¤.");
 				}
 				
 				Jsoup
@@ -130,16 +130,16 @@ public class MainActivity extends ActionBarActivity implements TabListener {
 				.post();
 				
 			} catch (Exception e) {
-				Toast.makeText(this, "ÀÎÁõ¿¡ ½ÇÆĞÇß½À´Ï´Ù.\n" + e.getMessage(), Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "ì¸ì¦ì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤.\n" + e.getMessage(), Toast.LENGTH_LONG).show();
 				finish();
 				return;
 			}
 			
-			String formattedExpireDate = new SimpleDateFormat("yyyy³â MM¿ù ddÀÏ±îÁö »ç¿ë °¡´ÉÇÕ´Ï´Ù.").format(expire_date.getTime());
+			String formattedExpireDate = new SimpleDateFormat("yyyyë…„ MMì›” ddì¼ê¹Œì§€ ì‚¬ìš© ê°€ëŠ¥í•©ë‹ˆë‹¤.").format(expire_date.getTime());
 			Toast.makeText(this, formattedExpireDate, Toast.LENGTH_LONG).show();
 			
 		} else {
-			Toast.makeText(this, "¹«Á¦ÇÑ ¹öÀü ÀÔ´Ï´Ù.", Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "ë¬´ì œí•œ ë²„ì „ ì…ë‹ˆë‹¤.", Toast.LENGTH_LONG).show();
 			
 			TelephonyManager telephonyManager = (TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
 			String line1Number = telephonyManager.getLine1Number();
@@ -164,8 +164,8 @@ public class MainActivity extends ActionBarActivity implements TabListener {
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeButtonEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionBar.addTab(actionBar.newTab().setText("½ÇÇà").setTabListener(this));
-        actionBar.addTab(actionBar.newTab().setText("¼³Á¤").setTabListener(this));
+        actionBar.addTab(actionBar.newTab().setText("ì‹¤í–‰").setTabListener(this));
+        actionBar.addTab(actionBar.newTab().setText("ì„¤ì •").setTabListener(this));
         viewPager.setOnPageChangeListener(new OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
@@ -180,11 +180,11 @@ public class MainActivity extends ActionBarActivity implements TabListener {
         });
 		
 		final EditText password = new EditText(this);
-		password.setHint("ºñ¹Ğ¹øÈ£¸¦ ÀÔ·ÂÇÏ¼¼¿ä");
+		password.setHint("ë¹„ë°€ë²ˆí˜¸ë¥¼ ì…ë ¥í•˜ì„¸ìš”");
 		password.setSingleLine();
 		
 		final AlertDialog builder = new AlertDialog.Builder(this)
-		.setTitle("ºñ¹Ğ¹øÈ£ÀÔ·Â")
+		.setTitle("ë¹„ë°€ë²ˆí˜¸ì…ë ¥")
 		.setView(password)
 		.setOnCancelListener(new OnCancelListener() {
 			
@@ -222,7 +222,7 @@ public class MainActivity extends ActionBarActivity implements TabListener {
 				@Override
 				public void run() {
 					TextView list_rank = (TextView) listView.getChildAt(input.indexOf(item)).findViewById(R.id.list_textView_rank);
-					list_rank.setText("Á¶È¸¼ö " + item.countClicked + "È¸ (ÇöÀç " + item.rank + "À§)");
+					list_rank.setText("ì¡°íšŒìˆ˜ " + item.countClicked + "íšŒ (í˜„ì¬ " + item.rank + "ìœ„)");
 				}
 			});
 		}
@@ -276,14 +276,14 @@ public class MainActivity extends ActionBarActivity implements TabListener {
 		
 		if (!b_start) {
 			thread.start();
-			Toast.makeText(getApplicationContext(), "°Ë»öÀ» ½ÃÀÛÇÕ´Ï´Ù", Toast.LENGTH_LONG).show();
-			((Button) this.findViewById(R.id.activity_main_button_toggle)).setText("ÁßÁö");
+			Toast.makeText(getApplicationContext(), "ê²€ìƒ‰ì„ ì‹œì‘í•©ë‹ˆë‹¤", Toast.LENGTH_LONG).show();
+			((Button) this.findViewById(R.id.activity_main_button_toggle)).setText("ì¤‘ì§€");
 		}
 
 		else {
 			thread.interrupt();
-			Toast.makeText(getApplicationContext(), "°Ë»öÀ» Á¤ÁöÇÕ´Ï´Ù", Toast.LENGTH_LONG).show();
-			((Button) findViewById(R.id.activity_main_button_toggle)).setText("½ÃÀÛ");
+			Toast.makeText(getApplicationContext(), "ê²€ìƒ‰ì„ ì •ì§€í•©ë‹ˆë‹¤", Toast.LENGTH_LONG).show();
+			((Button) findViewById(R.id.activity_main_button_toggle)).setText("ì‹œì‘");
 		}
 
 		b_start = !b_start;
@@ -304,13 +304,13 @@ public class MainActivity extends ActionBarActivity implements TabListener {
 		
 	public void changePassword(View v){
 		final EditText password = new EditText(this);
-		password.setHint("ºñ¹Ğ¹øÈ£¸¦ ÀÔ·ÂÇÏ¼¼¿ä");
+		password.setHint("ë¹„ë°€ë²ˆí˜¸ë¥¼ ì…ë ¥í•˜ì„¸ìš”");
 		password.setSingleLine();
 		
 		final AlertDialog builder = new AlertDialog.Builder(this)
-		.setTitle("ºñ¹Ğ¹øÈ£ÀÔ·Â")
+		.setTitle("ë¹„ë°€ë²ˆí˜¸ì…ë ¥")
 		.setView(password)
-		.setPositiveButton("È®ÀÎ", new DialogInterface.OnClickListener() {
+		.setPositiveButton("í™•ì¸", new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -318,7 +318,7 @@ public class MainActivity extends ActionBarActivity implements TabListener {
 				SharedPreferences.Editor editor = pref.edit();
 				editor.putString("password", password.getText().toString());
 				editor.commit();
-				Toast.makeText(getApplicationContext(), "¼³Á¤ ¿Ï·áµÇ¾ú½À´Ï´Ù", Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), "ì„¤ì • ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤", Toast.LENGTH_LONG).show();
 				dialog.dismiss();
 			}
 		})
@@ -370,7 +370,7 @@ public class MainActivity extends ActionBarActivity implements TabListener {
 									bfw.close();
 								} catch (Exception e) {
 								}
-								Toast.makeText(MainActivity.this, "·Î±×°¡ ÀúÀåµÇ¾ú½À´Ï´Ù.", Toast.LENGTH_LONG).show();
+								Toast.makeText(MainActivity.this, "ë¡œê·¸ê°€ ì €ì¥ë˜ì—ˆìŠµë‹ˆë‹¤.", Toast.LENGTH_LONG).show();
 								return false;
 							}
 						});
@@ -403,7 +403,7 @@ public class MainActivity extends ActionBarActivity implements TabListener {
 							final NaverItem item = input.get(i);
 							list_query.setText(item.query);
 							list_url.setText(item.url);
-							list_rank.setText("Á¶È¸¼ö " + item.countClicked + "È¸ (ÇöÀç " + item.rank + "À§)");
+							list_rank.setText("ì¡°íšŒìˆ˜ " + item.countClicked + "íšŒ (í˜„ì¬ " + item.rank + "ìœ„)");
 							list_query.addTextChangedListener(new TextWatcher() {
 								
 								@Override

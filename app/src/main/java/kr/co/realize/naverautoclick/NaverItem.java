@@ -1,4 +1,4 @@
-package kr.co.realize.naverautoclick;
+﻿package kr.co.realize.naverautoclick;
 
 public class NaverItem {
 	public String query;

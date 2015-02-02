@@ -1,4 +1,4 @@
-package kr.co.realize.naverautoclick;
+ï»¿package kr.co.realize.naverautoclick;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -60,24 +60,24 @@ public class NaverThread extends Thread {
 				
 				index = itemList.indexOf(item) + 1;
 				
-				Log.i("naverautoclick", index + "¹øÂ° ¸µÅ© ½ÃÀÛµÇ¾ú½À´Ï´Ù.");
+				Log.i("naverautoclick", index + "ë²ˆì§¸ ë§í¬ ì‹œì‘ë˜ì—ˆìŠµë‹ˆë‹¤.");
 				
 				try {
-					listener.onLog(index + "¹øÂ° ¸µÅ© ½ÃÀÛµÇ¾ú½À´Ï´Ù.");
+					listener.onLog(index + "ë²ˆì§¸ ë§í¬ ì‹œì‘ë˜ì—ˆìŠµë‹ˆë‹¤.");
 					
-					listener.onLog(index + "¹øÂ° ¸µÅ© °Ë»ö ½ÃÀÛµÇ¾ú½À´Ï´Ù.");
+					listener.onLog(index + "ë²ˆì§¸ ë§í¬ ê²€ìƒ‰ ì‹œì‘ë˜ì—ˆìŠµë‹ˆë‹¤.");
 					this.search(item);
-					listener.onLog(index + "¹øÂ° ¸µÅ© °Ë»ö ¿Ï·áµÇ¾ú½À´Ï´Ù.");
+					listener.onLog(index + "ë²ˆì§¸ ë§í¬ ê²€ìƒ‰ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.");
 					
-					listener.onLog(index + "¹øÂ° ¸µÅ© ÆäÀÌÁö Å½»ö ½ÃÀÛµÇ¾ú½À´Ï´Ù.");
+					listener.onLog(index + "ë²ˆì§¸ ë§í¬ í˜ì´ì§€ íƒìƒ‰ ì‹œì‘ë˜ì—ˆìŠµë‹ˆë‹¤.");
 					boolean pageFounded = this.find(item);
-					listener.onLog(index + "¹øÂ° ¸µÅ© ÆäÀÌÁö Å½»ö ¿Ï·áµÇ¾ú½À´Ï´Ù.");
+					listener.onLog(index + "ë²ˆì§¸ ë§í¬ í˜ì´ì§€ íƒìƒ‰ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.");
 					
 					if (pageFounded) {
-						listener.onLog(index + "¹øÂ° ¸µÅ© Ã¼·ù¸¦ ½ÃÀÛÇÕ´Ï´Ù.");
+						listener.onLog(index + "ë²ˆì§¸ ë§í¬ ì²´ë¥˜ë¥¼ ì‹œì‘í•©ë‹ˆë‹¤.");
 						Thread.sleep(delay + (long) (Math.random() * 10000));
 						item.countClicked++;
-						listener.onLog(index + "¹øÂ° ¸µÅ© Ã¼·ù°¡ ³¡³µ½À´Ï´Ù.");
+						listener.onLog(index + "ë²ˆì§¸ ë§í¬ ì²´ë¥˜ê°€ ëë‚¬ìŠµë‹ˆë‹¤.");
 
 						for (int i=0; i<2; i++) {
 							this.synchronizedLoadUrl("javascript:history.back()");
@@ -89,10 +89,10 @@ public class NaverThread extends Thread {
 							this.waitRandomSeconds();
 						}
 					} else {
-						listener.onLog(index + "¹øÂ° ¸µÅ©¸¦ Ã£Áö ¸øÇß½À´Ï´Ù.");
+						listener.onLog(index + "ë²ˆì§¸ ë§í¬ë¥¼ ì°¾ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.");
 					}
 
-					listener.onLog(index + "¹øÂ° ¸µÅ© ÃÊ±âÈ­ Áß ÀÔ´Ï´Ù...");
+					listener.onLog(index + "ë²ˆì§¸ ë§í¬ ì´ˆê¸°í™” ì¤‘ ì…ë‹ˆë‹¤...");
 					handler.post(new Runnable() {
 						
 						@Override
@@ -101,16 +101,16 @@ public class NaverThread extends Thread {
 						}
 					});
 					CookieManager.getInstance().removeAllCookie();
-					listener.onLog(index + "¹øÂ° ¸µÅ© IP¸¦ º¯°æÇÏ´Â Áß ÀÔ´Ï´Ù...");
+					listener.onLog(index + "ë²ˆì§¸ ë§í¬ IPë¥¼ ë³€ê²½í•˜ëŠ” ì¤‘ ì…ë‹ˆë‹¤...");
 					this.changeNetworkState();
 					
-					listener.onLog(index + "¹øÂ° ¸µÅ© ³¡³µ½À´Ï´Ù.");
+					listener.onLog(index + "ë²ˆì§¸ ë§í¬ ëë‚¬ìŠµë‹ˆë‹¤.");
 					listener.onComplete(item);
 				} catch (InterruptedException e) {
 					break;
 				} catch (NullPointerException e) {
-					Log.e("naverautoclick", index + "¹øÂ° ¸µÅ© ÀÀ´äÀÌ ¾ø¾î Àç½ÃÀÛÇÕ´Ï´Ù.");
-					listener.onLog(index + "¹øÂ° ¸µÅ© ÀÀ´äÀÌ ¾ø¾î Àç½ÃÀÛÇÕ´Ï´Ù.");
+					Log.e("naverautoclick", index + "ë²ˆì§¸ ë§í¬ ì‘ë‹µì´ ì—†ì–´ ì¬ì‹œì‘í•©ë‹ˆë‹¤.");
+					listener.onLog(index + "ë²ˆì§¸ ë§í¬ ì‘ë‹µì´ ì—†ì–´ ì¬ì‹œì‘í•©ë‹ˆë‹¤.");
 					iterator.previous();
 					
 					final BlockingQueue<String> waitChangeNetworkStateQueue = new ArrayBlockingQueue<String>(1);
@@ -147,7 +147,7 @@ public class NaverThread extends Thread {
 		boolean pageFounded = false;
 		
 		for (int page=1; page<=14; page++) {
-			listener.onLog(index + "¹øÂ° ¸µÅ© " + page + "¹øÂ° ÆäÀÌÁö Å½»ö Áß ÀÔ´Ï´Ù..");
+			listener.onLog(index + "ë²ˆì§¸ ë§í¬ " + page + "ë²ˆì§¸ í˜ì´ì§€ íƒìƒ‰ ì¤‘ ì…ë‹ˆë‹¤..");
 			this.waitRandomSeconds();
 			
 			String type = "uni";
@@ -297,7 +297,7 @@ public class NaverThread extends Thread {
 				Thread.sleep(1000);
 			}
 		} catch (NoSuchMethodException e) {
-			listener.onLog("setMobileDataEnabled¸¦ Ã£Áö ¸øÇß½À´Ï´Ù.");
+			listener.onLog("setMobileDataEnabledë¥¼ ì°¾ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.");
 			
 			Method[] setMobileDataEnabled = ConnectivityManager.class.getDeclaredMethods();
 			for (int i=0; i<setMobileDataEnabled.length; i++) {
@@ -309,7 +309,7 @@ public class NaverThread extends Thread {
 						types += parameterTypes[j].getName() + " ";
 					}
 					
-					listener.onLog("»ç¿ë °¡´ÉÇÑ setMobileDataEnabled : " + types);
+					listener.onLog("ì‚¬ìš© ê°€ëŠ¥í•œ setMobileDataEnabled : " + types);
 				}
 			}
 		}

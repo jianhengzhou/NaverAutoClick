@@ -1,4 +1,4 @@
-package kr.co.realize.naverautoclick;
+﻿package kr.co.realize.naverautoclick;
 
 public interface NaverThreadListener {
 	public void onLog(String log);
