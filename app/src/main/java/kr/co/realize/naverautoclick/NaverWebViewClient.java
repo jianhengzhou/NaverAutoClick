@@ -1,10 +1,10 @@
-﻿package kr.co.realize.naverautoclick;
-
-import java.util.concurrent.BlockingQueue;
+package kr.co.realize.naverautoclick;
 
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import java.util.concurrent.BlockingQueue;
 
 public class NaverWebViewClient extends WebViewClient {
 	BlockingQueue<String> pageFinishedQueue;

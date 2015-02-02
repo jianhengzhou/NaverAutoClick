@@ -1,4 +1,4 @@
-﻿package kr.co.realize.naverautoclick;
+package kr.co.realize.naverautoclick;
 
 public class NaverItem {
 	public String query;
@@ -16,4 +16,8 @@ public class NaverItem {
 		this.rank = rank;
 	}
 
+    @Override
+    public String toString() {
+        return "{\"query\":\"" + query + "\",\"url\":\"" + url + "\"}";
+    }
 }
