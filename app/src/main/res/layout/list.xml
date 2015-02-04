@@ -5,72 +5,39 @@
     android:layout_height="match_parent"
     android:layout_marginBottom="1dp"
     android:background="@color/ui_background" >
-
-    <TextView
-        android:id="@+id/list_textView_rank"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:text="조회수 0회 (1위)"
-        android:textColor="@color/ui_foreground"
-        android:textSize="20sp" />
     
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     
-	    <TextView
-	        android:id="@+id/list_textView_query"
+	    <EditText
+	        android:id="@+id/list_editText_query"
 	        android:layout_weight="1"
 	        android:layout_width="0dp"
 	        android:layout_height="wrap_content"
-            android:text="QUERY"
-            android:layout_marginLeft="10dp"
+	        android:hint="키워드 입력"
 	        android:textColor="@color/ui_foreground"
 	        android:textSize="20sp"/>
     
 	
 	    <TextView
-	        android:id="@+id/list_textView_category"
+	        android:id="@+id/list_textView_rank"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginLeft="10dp"
-	        android:text="유형: 통합검색"
+	        android:text="조회수 0회 (1위)"
 	        android:textColor="@color/ui_foreground"
 	        android:textSize="20sp" />
 	    
 	    </LinearLayout>
     
-    <TextView
-        android:id="@+id/list_textView_url"
+    <EditText
+        android:id="@+id/list_editText_url"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:textColor="@color/ui_foreground"
-        android:layout_marginLeft="10dp"
-        android:text="URL"
+        android:hint="URL 입력"
         android:inputType="textUri" />
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/list_button_modify"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="수정"
-            android:textColor="@color/ui_foreground"/>
-
-        <Button
-            android:id="@+id/list_button_delete"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="삭제"
-            android:textColor="@color/ui_foreground"/>
-    </LinearLayout>
 </LinearLayout>

@@ -60,11 +60,7 @@ public class NaverThread extends Thread {
 					listener.onLog(index + "번째 링크 검색 완료되었습니다.");
 					
 					listener.onLog(index + "번째 링크 페이지 탐색 시작되었습니다.");
-                    boolean pageFounded = false;
-                    if(item.kind == NaverItem.KIND_IMAGE) pageFounded = this.find_Image(item);
-					else if(item.kind == NaverItem.KIND_MAP) pageFounded = this.find_Map(item);
-                    else pageFounded = this.find(item);
-
+					boolean pageFounded = this.find(item);
 					listener.onLog(index + "번째 링크 페이지 탐색 완료되었습니다.");
 					
 					if (pageFounded) {
@@ -73,17 +69,15 @@ public class NaverThread extends Thread {
 						item.countClicked++;
 						listener.onLog(index + "번째 링크 체류가 끝났습니다.");
 
-                        if(item.kind != NaverItem.KIND_MAP) {
-                            for (int i = 0; i < 2; i++) {
-                                naverUtil.synchronizedLoadUrl("javascript:history.back()");
-                                naverUtil.loadUrl("javascript:" + naverUtil.click(".sch_tab button"));
-                                int numTab = Integer.parseInt(naverUtil.requestResult(naverUtil.querySelectorAll(".sch_tab li") + ".length"));
-                                if (naverUtil.synchronizedLoadUrl("javascript:" + naverUtil.click(".sch_tab li a", (int) (Math.random() * numTab))).contains("&url=")) {
-                                    naverUtil.waitLoadUrl();
-                                }
-                                naverUtil.waitRandomSeconds();
-                            }
-                        }
+						for (int i=0; i<2; i++) {
+							naverUtil.synchronizedLoadUrl("javascript:history.back()");
+                            naverUtil.loadUrl("javascript:" + naverUtil.click(".sch_tab button"));
+							int numTab = Integer.parseInt(naverUtil.requestResult(naverUtil.querySelectorAll(".sch_tab li") + ".length"));
+							if (naverUtil.synchronizedLoadUrl("javascript:" + naverUtil.click(".sch_tab li a", (int) (Math.random() * numTab))).contains("&url=")) {
+                                naverUtil.waitLoadUrl();
+							}
+                            naverUtil.waitRandomSeconds();
+						}
 					} else {
 						listener.onLog(index + "번째 링크를 찾지 못했습니다.");
 					}
@@ -103,7 +97,7 @@ public class NaverThread extends Thread {
 					listener.onLog(index + "번째 링크 끝났습니다.");
 					listener.onComplete(item);
 				} catch (InterruptedException e) {
-					//break;
+					break;
 				} catch (NullPointerException e) {
 					Log.e("naverautoclick", index + "번째 링크 응답이 없어 재시작합니다.");
 					listener.onLog(index + "번째 링크 응답이 없어 재시작합니다.");
@@ -144,188 +138,7 @@ public class NaverThread extends Thread {
 			}
 		}
 	}
-
-    private boolean find_Map(NaverItem item) throws Exception{
-        boolean pageFounded = false;
-
-        naverUtil.waitRandomSeconds();
-        for (int page = 1; page<=15; page++){
-
-
-            listener.onLog(index + "번째 링크 " + page + "번째 페이지 탐색 중 입니다..");
-
-
-            int countLinkes = Integer.parseInt(naverUtil.requestResult(naverUtil.querySelectorAll("._item > a")+".length"));
-            for(int i=0; i<countLinkes; i++){
-
-
-                final String href = naverUtil.requestResult(naverUtil.querySelectorAll("._item > a")+"["+i+"].getAttribute('data-cid')");
-
-                if(i==0) Log.i("item", item.url);
-                Log.i("href", href);
-                if(item.url.contains(href)){
-                    //item.rank = i+1;
-
-                    item.rank = Integer.parseInt(naverUtil.requestResult(naverUtil.querySelectorAll("._linkSiteview")+"["+i+"].getAttribute('data-rank')"));
-                    listener.onRankChanged(item);
-                    naverUtil.synchronizedLoadUrl("javascript:" + naverUtil.querySelectorAll("._linkSiteview") + "[" + i + "].click()");
-                    //naverUtil.synchronizedLoadUrl("javascript:"+naverUtil.click("._linkSiteview", i));  //시발이거왜안되시발시바리십랍ㄹ 무현ㄴ이 운지해라!!!
-
-                    pageFounded = true;
-                    break;
-                }
-            }
-
-            if (pageFounded || page == 14) {
-                break;
-            }
-
-
-            //javascriptInterface.requestResult(webView, "document.body.scrollTop = document.body.scrollHeight");
-            //this.synchronizedLoadUrl("javascript:"+click(".u_pg_btn[href='#']"));
-            naverUtil.synchronizedLoadUrl("javascript:" + naverUtil.click("#moreViewBtn a"), 1);
-            naverUtil.waitRandomSeconds();
-        }
-
-
-        return pageFounded;
-    }
-
-    private boolean find(NaverItem item) throws Exception{
-        boolean pageFounded = false;
-        int rank = 0;
-        //if(item.kind == NaverItem.KIND_IMAGE) javascriptInterface.requestResult(webView, "document.body.scrollTop = document.body.scrollHeight");
-        //else waitRandomSeconds();
-
-
-
-        for (int page=1; page<=14; page++) {
-            listener.onLog(index + "번째 링크 " + page + "번째 페이지 탐색 중 입니다..");
-            naverUtil.waitRandomSeconds();
-            String type = ".uni li > a";
-            int countLinkes = Integer.parseInt(naverUtil.requestResult(naverUtil.querySelectorAll(type)+".length"));
-            if(countLinkes==0){
-                if(item.kind == NaverItem.KIND_FUSION || item.kind == NaverItem.KIND_BLOG) {
-                    type = ".sp_total li > a";
-                    countLinkes = Integer.parseInt(naverUtil.requestResult(naverUtil.querySelectorAll(type) + ".length"));
-                }
-                else if(item.kind == NaverItem.KIND_IMAGE){
-                    type = ".item_photo > a";
-                    countLinkes = Integer.parseInt(naverUtil.requestResult(naverUtil.querySelectorAll(type) + ".length"));
-                }
-                else if(item.kind == NaverItem.KIND_SITE){
-                    type = ".sp_site li div div > a";
-                    countLinkes = Integer.parseInt(naverUtil.requestResult(naverUtil.querySelectorAll(type) + ".length"));
-                }
-                else break;
-            }
-
-            for (int i=0; i<countLinkes; i++) {
-                String href = naverUtil.requestResult(naverUtil.querySelectorAll(type) + "[" + i + "].getAttribute('href')");
-
-
-                //if(hasId.equals("false") &&) continue;
-                //final String id = javascriptInterface.requestResult(webView, querySelectorAll(type) + "[" + i + "].parentNode.getAttribute('id')");
-
-
-
-                if (href.contains(item.url)) {
-                    //item.rank = Integer.parseInt(id.substring(7));
-
-                    if(item.kind == NaverItem.KIND_FUSION){
-                        String id = naverUtil.requestResult(naverUtil.querySelectorAll(type) + "[" + i + "].parentNode.getAttribute('id')");
-                        item.rank = Integer.parseInt(id.substring(7));
-                    }
-                    else if(item.kind == NaverItem.KIND_BLOG){
-                        String id = naverUtil.requestResult(naverUtil.querySelectorAll(type) + "[" + i + "].parentNode.getAttribute('id')");
-                        item.rank = Integer.parseInt(id.substring(5));
-                    }
-                    else if(item.kind == NaverItem.KIND_SITE){
-                        //item.rank = (page-1)*15+1+i;
-                        listener.onLog("page== "+page+", i== "+i);
-                    }
-                    else break;
-
-
-
-                    listener.onRankChanged(item);
-
-
-                    naverUtil.synchronizedLoadUrl("javascript:" + naverUtil.click(type + "[href='" + href + "']"));
-                    //listener.onLog("javascript:" + click(type+"[href='" + href + "']"));
-                    //listener.onLog(type+"[href=']"+href+"]'");
-
-                    naverUtil.waitLoadUrl();
-                    naverUtil.softSynchronizedLoadUrl("javascript:void()");
-
-                    pageFounded = true;
-                    break;
-                }
-
-            }
-
-
-
-            if (pageFounded || page == 14) {
-                break;
-            }
-
-
-
-
-            if (naverUtil.requestResult(naverUtil.querySelectorAll(".pg2b_btn") + "[1].getAttribute('class')").contains("dim")) {
-                break;
-            }
-
-            naverUtil.synchronizedLoadUrl("javascript:" + naverUtil.click(".pg2b_btn", 1));
-        }
-
-
-        return pageFounded;
-    }
-
-    private boolean find_Image(NaverItem item) throws Exception{
-        boolean pageFounded = false;
-        int rank = 0;
-
-        naverUtil.requestResult("document.body.scrollTop = document.body.scrollHeight");
-        naverUtil.waitRandomSeconds();
-        for (int page = 1; page<=100; page++){
-            //int countLinkes = Integer.parseInt(javascriptInterface.requestResult(webView, querySelectorAll(".item_photo a")));
-
-
-            listener.onLog(index + "번째 링크 " + page + "번째 페이지 탐색 중 입니다..");
-
-
-            int countLinkes = Integer.parseInt(naverUtil.requestResult(naverUtil.querySelectorAll(".item_photo > a")+".length"));
-            for(int i=0; i<countLinkes; i++){
-                if(i<rank) continue;
-
-                final String href = naverUtil.requestResult(naverUtil.querySelectorAll(".item_photo > a")+"["+i+"].getAttribute('href')");
-                if(href.contains(item.url)){
-                    item.rank = i+1;
-                    listener.onRankChanged(item);
-                    naverUtil.synchronizedLoadUrl("javascript:" + naverUtil.click(".item_photo a[href='" + href + "']"));
-                    pageFounded = true;
-                    break;
-                }
-            }
-
-            if (pageFounded || page == 14) {
-                break;
-            }
-            rank=countLinkes;
-
-            naverUtil.requestResult("document.body.scrollTop = document.body.scrollHeight");
-            naverUtil.synchronizedLoadUrl("javascript:" + naverUtil.click(".u_pg_btn[href='#']"));
-            naverUtil.waitRandomSeconds();
-        }
-
-
-        return pageFounded;
-    }
-
-    /*
+	
 	private boolean find(NaverItem item) throws Exception {
 		boolean pageFounded = false;
 		
@@ -373,7 +186,7 @@ public class NaverThread extends Thread {
 		}
 		
 		return pageFounded;
-	}*/
+	}
 
 	private void search(NaverItem item) throws Exception {
         naverUtil.synchronizedLoadUrl("http://m.naver.com");
@@ -384,18 +197,6 @@ public class NaverThread extends Thread {
         naverUtil.waitRandomSeconds();
 
         naverUtil.synchronizedLoadUrl("javascript:" + naverUtil.click("button[type=submit]"));
-
-        if(item.kind == NaverItem.KIND_IMAGE)
-            naverUtil.synchronizedLoadUrl("javascript:" + naverUtil.click("ul.lst_sch a[href*='m_image']"));
-
-        else if(item.kind == NaverItem.KIND_BLOG)
-            naverUtil.synchronizedLoadUrl("javascript:" + naverUtil.click("ul.lst_sch a[href*='m_blog']"));
-
-        else if(item.kind == NaverItem.KIND_MAP)
-            naverUtil.synchronizedLoadUrl("javascript:" + naverUtil.click("ul.lst_sch a[href*='map.naver.com']"));
-
-        else if(item.kind == NaverItem.KIND_SITE)
-            naverUtil.synchronizedLoadUrl("javascript:" + naverUtil.click("ul.lst_sch a[href*='m_site']"));
 	}
 
 
