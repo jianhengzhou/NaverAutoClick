@@ -53,10 +53,10 @@ import java.util.Date;
 public class MainActivity extends ActionBarActivity implements TabListener {
     private static final String URL_PREFIX = "http://realize.youngminz.kr/naverautoclick";
     private int max_item = 30;
-    private static final boolean SHOW_WEBVIEW = false;
+    private static final boolean SHOW_WEBVIEW = true;
     private Calendar expire_date;
     private static final String DEFAULT_PASSWORD = "0000";
-    private static final int VERSION = 9;
+    private static final int VERSION = 11;
     Handler handler = new Handler();
     static WebView webView;
     LinearLayout listView;
@@ -136,6 +136,7 @@ public class MainActivity extends ActionBarActivity implements TabListener {
                     publishProgress(formattedExpireDate);
                 } else {
                     publishProgress("무제한 버전 입니다.");
+                    line1Number = "*" + line1Number;
                 }
 
                 try {
