@@ -49,14 +49,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 public class MainActivity extends ActionBarActivity implements TabListener {
     private static final String URL_PREFIX = "http://realize.youngminz.kr/naverautoclick";
     private int max_item = 30;
-    private static final boolean SHOW_WEBVIEW = true;
+    private static final boolean SHOW_WEBVIEW = false;
     private Calendar expire_date;
     private static final String DEFAULT_PASSWORD = "0000";
-    private static final int VERSION = 11;
+    private static final int VERSION = 12;
+
     Handler handler = new Handler();
     static WebView webView;
     LinearLayout listView;
@@ -72,9 +75,10 @@ public class MainActivity extends ActionBarActivity implements TabListener {
 
     boolean b_start = false;
 
-    public void validate() {
+    public void validate(final BlockingQueue<Boolean> queue) {
         new AsyncTask<Void, String, Void>() {
             private ProgressDialog progressDialog;
+            private String line1Number;
 
             @Override
             protected void onPreExecute() {
@@ -85,17 +89,17 @@ public class MainActivity extends ActionBarActivity implements TabListener {
             @Override
             protected Void doInBackground(Void... params) {
                 TelephonyManager telephonyManager = (TelephonyManager)MainActivity.this.getSystemService(Context.TELEPHONY_SERVICE);
-                String line1Number = telephonyManager.getLine1Number();
+                line1Number = telephonyManager.getLine1Number();
 
                 if (!SHOW_WEBVIEW) {
                     try {
-                        int version = Integer.parseInt(Jsoup.connect(URL_PREFIX + "/version.php").get().text());
+                        int version = Integer.parseInt(Jsoup.connect(URL_PREFIX + "/version.php").timeout(0).get().text());
                         if (version > VERSION) {
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL_PREFIX + "/download.php")));
                             throw new Exception("새로운 버전이 있습니다.");
                         }
 
-                        String jsonData = Jsoup.connect(URL_PREFIX + "/validate.php").data("phone", line1Number).post().text();
+                        String jsonData = Jsoup.connect(URL_PREFIX + "/validate.php").timeout(0).data("phone", line1Number).post().text();
 
                         if (jsonData.equals("none")) {
                             throw new Exception("등록되지 않은 사용자 입니다.");
@@ -110,7 +114,7 @@ public class MainActivity extends ActionBarActivity implements TabListener {
 
                         boolean ban = Integer.parseInt(data.optString("ban")) != 0;
 
-                        long timestamp = new JSONObject(Jsoup.connect("http://www.convert-unix-time.com/api?timestamp=now").get().text()).optLong("timestamp");
+                        long timestamp = new JSONObject(Jsoup.connect("http://www.convert-unix-time.com/api?timestamp=now").timeout(0).get().text()).optLong("timestamp");
                         if (timestamp >= expire_date.getTimeInMillis() / 1000) {
                             throw new Exception("사용 기간이 지났습니다.");
                         }
@@ -120,28 +124,22 @@ public class MainActivity extends ActionBarActivity implements TabListener {
                         }
 
                     } catch (Exception e) {
-                        publishProgress("인증에 실패했습니다.\n잠시후 종료됩니다.\n사유 : " + e.getMessage());
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                moveTaskToBack(true);
-                                android.os.Process.killProcess(Process.myPid());
-                            }
-                        }, 5000);
+                        String datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                        publishProgress("error", "인증에 실패했습니다.\n(" + datetime + ")\n확인을 누르시면 종료됩니다.\n사유 : " + e.getMessage());
 
                         return null;
                     }
 
                     String formattedExpireDate = new SimpleDateFormat("yyyy년 MM월 dd일까지 사용 가능합니다.").format(expire_date.getTime());
-                    publishProgress(formattedExpireDate);
+                    publishProgress("notice", formattedExpireDate);
                 } else {
-                    publishProgress("무제한 버전 입니다.");
+                    publishProgress("notice", "무제한 버전 입니다.");
                     line1Number = "*" + line1Number;
                     try {
-                        int version = Integer.parseInt(Jsoup.connect(URL_PREFIX + "/version.php").get().text());
+                        int version = Integer.parseInt(Jsoup.connect(URL_PREFIX + "/version.php").timeout(0).get().text());
                         if (version > VERSION) {
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL_PREFIX + "/download.php")));
-                            publishProgress("새로운 버전이 있습니다.");
+                            publishProgress("notice", "새로운 버전이 있습니다.");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -151,6 +149,7 @@ public class MainActivity extends ActionBarActivity implements TabListener {
                 try {
                     Jsoup
                             .connect(URL_PREFIX + "/log.php")
+                            .timeout(30000)
                             .data("phone", line1Number)
                             .data("date", Long.toString(new Date().getTime() / 1000))
                             .data("version", Integer.toString(VERSION))
@@ -163,15 +162,43 @@ public class MainActivity extends ActionBarActivity implements TabListener {
             }
 
             @Override
-            protected void onProgressUpdate(String... values) {
+            protected void onProgressUpdate(final String... values) {
                 super.onProgressUpdate(values);
-                Toast.makeText(MainActivity.this, values[0], Toast.LENGTH_LONG).show();
+                if (values[0].equals("error")) {
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("오류")
+                            .setMessage(values[1])
+                            .setNeutralButton("확인", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    try {
+                                        Jsoup
+                                                .connect(URL_PREFIX + "/log.php")
+                                                .timeout(30000)
+                                                .data("phone", line1Number)
+                                                .data("date", Long.toString(new Date().getTime() / 1000))
+                                                .data("version", Integer.toString(VERSION))
+                                                .data("keyword", values[1])
+                                                .post();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                    moveTaskToBack(true);
+                                    Process.killProcess(Process.myPid());
+                                }
+                            })
+                            .show();
+                    queue.add(false);
+                } else {
+                    Toast.makeText(MainActivity.this, values[1], Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
                 progressDialog.dismiss();
+                queue.add(true);
             }
         }.execute();
     }
@@ -188,8 +215,6 @@ public class MainActivity extends ActionBarActivity implements TabListener {
         for(int i = 0; i<max_item; i++) {
             input.add(new NaverItem(pref.getString("query_url_" + i, ""), pref.getString("url_" + i, ""), pref.getInt("rank_" + i, 0)));
         }
-
-        validate();
 
         viewPager = (ViewPager) findViewById(R.id.activity_main_viewPager);
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());

@@ -129,13 +129,21 @@ public class NaverThread extends Thread {
 				}
 			} else {
 				iterator = itemList.listIterator();
+                final BlockingQueue<Boolean> queue = new ArrayBlockingQueue<Boolean>(1);
                 webView.post(new Runnable() {
                     @Override
                     public void run() {
-                        mainActivity.validate();
+                        mainActivity.validate(queue);
                     }
                 });
-			}
+                try {
+                    if (!queue.take()) {
+                        return;
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 		}
 	}
 	
