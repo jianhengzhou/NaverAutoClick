@@ -83,13 +83,13 @@ public class NaverThread extends Thread {
 					}
 
 					listener.onLog(index + "번째 링크 초기화 중 입니다...");
-					webView.post(new Runnable() {
+					/*webView.post(new Runnable() {
 						
 						@Override
 						public void run() {
 							webView.clearCache(true);
 						}
-					});
+					});*/
 					CookieManager.getInstance().removeAllCookie();
 					listener.onLog(index + "번째 링크 IP를 변경하는 중 입니다...");
                     naverUtil.changeNetworkState();

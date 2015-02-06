@@ -9,10 +9,8 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
+import android.os.*;
+import android.os.Process;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -58,7 +56,7 @@ public class MainActivity extends ActionBarActivity implements TabListener {
     private static final boolean SHOW_WEBVIEW = false;
     private Calendar expire_date;
     private static final String DEFAULT_PASSWORD = "0000";
-    private static final int VERSION = 10;
+    private static final int VERSION = 9;
     Handler handler = new Handler();
     static WebView webView;
     LinearLayout listView;
@@ -126,7 +124,8 @@ public class MainActivity extends ActionBarActivity implements TabListener {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                System.exit(0);
+                                moveTaskToBack(true);
+                                android.os.Process.killProcess(Process.myPid());
                             }
                         }, 5000);
 
