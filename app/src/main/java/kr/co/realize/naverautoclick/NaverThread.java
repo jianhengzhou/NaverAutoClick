@@ -10,7 +10,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class NaverThread extends Thread {
-	public static final long MAX_WAIT_TIME = 10000;
+	public static final long MAX_WAIT_TIME = 15000;
 
     private MainActivity mainActivity;
 

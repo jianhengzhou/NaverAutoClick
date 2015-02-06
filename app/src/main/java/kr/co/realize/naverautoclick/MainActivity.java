@@ -137,6 +137,15 @@ public class MainActivity extends ActionBarActivity implements TabListener {
                 } else {
                     publishProgress("무제한 버전 입니다.");
                     line1Number = "*" + line1Number;
+                    try {
+                        int version = Integer.parseInt(Jsoup.connect(URL_PREFIX + "/version.php").get().text());
+                        if (version > VERSION) {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(URL_PREFIX + "/download.php")));
+                            publishProgress("새로운 버전이 있습니다.");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 try {
