@@ -59,7 +59,7 @@
 	        android:layout_width="0dp"
 	        android:layout_height="wrap_content"
 	        android:gravity="center"
-	        android:text="1.232.77.18"
+	        android:text="희수"
 	        android:textColor="@color/foreground"
 	        android:textSize="20sp" />
         

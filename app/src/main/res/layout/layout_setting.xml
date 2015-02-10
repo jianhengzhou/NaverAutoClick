@@ -3,38 +3,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
-    <LinearLayout 
+
+    <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp">
-        
-		
-	    
-	    <Button
-	        android:id="@+id/activity_main_button_save"
-	        android:layout_width="match_parent"
-        	android:layout_height="wrap_content"
-        	android:layout_marginTop="10dp"
-        	android:layout_marginLeft="10dp"
-        	android:layout_marginRight="10dp"
-	        android:onClick="save"
-	        android:background="@color/ui_background"
-	        android:minWidth="0dp"
-	        android:minHeight="0dp"
-	        android:paddingLeft="10dp"
-	        android:paddingRight="10dp"
-	        android:paddingTop="5dp"
-	        android:paddingBottom="5dp"
-	        android:text="저장"
-	        android:textColor="@color/ui_foreground" />
-        
+
+
+
+        <Button
+            android:id="@+id/activity_main_button_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:onClick="addItem"
+            android:background="@color/ui_background"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="추가"
+            android:textColor="@color/ui_foreground" />
+
     </LinearLayout>
-    
-    <LinearLayout 
+
+    <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -52,17 +52,17 @@
             android:textColor="@color/foreground"
             android:textSize="20sp"
             android:gravity="center_vertical" />
-	    
-	    <EditText
-	        android:id="@+id/activity_main_editText_Time"
-	        android:layout_weight="1"
-	        android:layout_width="0dp"
-	        android:layout_height="wrap_content"
-	        android:layout_marginTop="5dp"
+
+        <EditText
+            android:id="@+id/activity_main_editText_Time"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:layout_marginRight="10dp"
-	        android:inputType="number"
-	        android:textAppearance="?android:attr/textAppearanceSmallInverse"
-	        android:textColor="@color/ui_foreground" />
+            android:inputType="number"
+            android:textAppearance="?android:attr/textAppearanceSmallInverse"
+            android:textColor="@color/ui_foreground" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -71,23 +71,23 @@
             android:textColor="@color/foreground"
             android:textSize="20sp"
             android:gravity="center_vertical" />
-        
+
     </LinearLayout>
-    
+
     <ScrollView
         android:id="@+id/activity_main_scrollView_ListView"
-        android:layout_weight="1"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_margin="10dp" >
-        
-	    <LinearLayout
-	        android:id="@+id/activity_main_listView_ListView"
-	        android:orientation="vertical"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:background="@color/ui_background" />
-	    
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:fillViewport = "true">
+
+        <ListView
+            android:id="@+id/activity_main_listView_ListView"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/ui_background" />
+
     </ScrollView>
 
 </LinearLayout>

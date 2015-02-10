@@ -1,0 +1,12 @@
+<!--?xml version="1.0" encoding="utf-8"?-->
+<resources>
+
+    <string-array name="combo">
+        <item>통합검색</item>
+        <item>이미지</item>
+        <item>블로그</item>
+        <item>사이트</item>
+        <item>지도</item>
+    </string-array>
+
+</resources>

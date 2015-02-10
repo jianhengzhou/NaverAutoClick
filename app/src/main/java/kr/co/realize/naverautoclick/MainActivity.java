@@ -30,12 +30,15 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.json.JSONObject;
@@ -55,15 +58,17 @@ import java.util.concurrent.BlockingQueue;
 public class MainActivity extends ActionBarActivity implements TabListener {
     private static final String URL_PREFIX = "http://realize.youngminz.kr/naverautoclick";
     private int max_item = 30;
-    private static final boolean SHOW_WEBVIEW = false;
+    private static final boolean SHOW_WEBVIEW = true;
     private Calendar expire_date;
     private static final String DEFAULT_PASSWORD = "0000";
-    private static final int VERSION = 12;
+    private static final int VERSION = 999; //Default: 12
+    private int item_length;
 
     Handler handler = new Handler();
     static WebView webView;
-    LinearLayout listView;
+    ListView listView;
     EditText time;
+    NaverAdapter Adapter;
 
     ScrollView Scroll;
     static ArrayList<NaverItem> input = new ArrayList<NaverItem>();
@@ -210,10 +215,11 @@ public class MainActivity extends ActionBarActivity implements TabListener {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        pref = getSharedPreferences("recent", MODE_PRIVATE);
+        pref = getSharedPreferences("ivvv", MODE_PRIVATE);
 
-        for(int i = 0; i<max_item; i++) {
-            input.add(new NaverItem(pref.getString("query_url_" + i, ""), pref.getString("url_" + i, ""), pref.getInt("rank_" + i, 0)));
+        item_length = pref.getInt("length", 0);
+        for(int i = 0; i<item_length; i++) {
+            input.add(new NaverItem(pref.getString("query_" + i, ""), pref.getString("url_" + i, ""), pref.getInt("rank_" + i, 0), pref.getInt("kind_"+i, 0)));
         }
 
         viewPager = (ViewPager) findViewById(R.id.activity_main_viewPager);
@@ -279,8 +285,9 @@ public class MainActivity extends ActionBarActivity implements TabListener {
 
                 @Override
                 public void run() {
-                    TextView list_rank = (TextView) listView.getChildAt(input.indexOf(item)).findViewById(R.id.list_textView_rank);
-                    list_rank.setText("조회수 " + item.countClicked + "회 (현재 " + item.rank + "위)");
+                    //TextView list_rank = (TextView) listView.getChildAt(input.indexOf(item)).findViewById(R.id.list_textView_rank);
+                    //list_rank.setText("조회수 " + item.countClicked + "회 (현재 " + item.rank + "위)");
+                    Adapter.notifyDataSetChanged();
                 }
             });
         }
@@ -346,18 +353,266 @@ public class MainActivity extends ActionBarActivity implements TabListener {
 
         b_start = !b_start;
 
-        save(null);
+        saveItem();
     }
 
-    public void save(View v) {
-        SharedPreferences pref = getSharedPreferences("recent", MODE_PRIVATE);
+    public void addItem(View v){
+        final View dlg = getLayoutInflater().inflate(R.layout.add, null);
+        final Spinner combo = (Spinner)dlg.findViewById(R.id.combo_spinner);
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.combo, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        combo.setAdapter(adapter);
+        final ActionBarActivity _this = this;
+
+        new AlertDialog.Builder(this)
+                .setTitle("추가")
+                .setView(dlg)
+                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface ar0, int ar1) {
+                        EditText query = (EditText) dlg.findViewById(R.id.combo_editText_query);
+                        EditText url = (EditText) dlg.findViewById(R.id.combo_editText_url);
+                        Spinner kind = (Spinner) dlg.findViewById(R.id.combo_spinner);
+                        if (item_length > max_item)
+                            Toast.makeText(_this, "더이상 등록 불가능 합니다.", Toast.LENGTH_SHORT).show();
+                        else {
+                            input.add(new NaverItem(query.getText().toString(), url.getText().toString(), 0, kind.getSelectedItemPosition()));
+                            item_length++;
+                            saveItem();
+                            Adapter.notifyDataSetChanged();
+                        }
+                    }
+                })
+                .setNegativeButton("취소", null).show();
+        /*final View dlg = getLayoutInflater().inflate(R.layout.add, null);
+        final Spinner combo = (Spinner)dlg.findViewById(R.id.combo_spinner);
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.combo, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        combo.setAdapter(adapter);
+        final ActionBarActivity _this = this;
+
+        new AlertDialog.Builder(this)
+                .setTitle("추가")
+                .setView(dlg)
+                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface ar0, int ar1) {
+                        EditText query = (EditText) dlg.findViewById(R.id.combo_editText_query);
+                        EditText url = (EditText) dlg.findViewById(R.id.combo_editText_url);
+                        Spinner kind = (Spinner) dlg.findViewById(R.id.combo_spinner);
+                        if (item_length > max_item)
+                            Toast.makeText(_this, "더이상 등록 불가능 합니다.", Toast.LENGTH_SHORT).show();
+                        else {
+                            final LinearLayout list = (LinearLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.list, listView, false);
+                            TextView list_query = (TextView) list.findViewById(R.id.list_textView_query);
+                            TextView list_url = (TextView) list.findViewById(R.id.list_textView_url);
+                            TextView list_rank = (TextView) list.findViewById(R.id.list_textView_rank);
+                            TextView list_category = (TextView) list.findViewById(R.id.list_textView_category);
+                            Button list_modify = (Button) list.findViewById(R.id.list_button_modify);
+                            final Button list_delete = (Button) list.findViewById(R.id.list_button_delete);
+                            //list_delete.setHint(item_length + "");
+
+
+                            input.add(new NaverItem(query.getText().toString(), url.getText().toString(), 0, kind.getSelectedItemPosition()));
+                            Toast.makeText(_this, input.size()+"", Toast.LENGTH_SHORT).show();
+                            for(int i=0; i<input.size(); i++)
+                                Toast.makeText(_this, input.get(i).toString(), Toast.LENGTH_SHORT).show();
+                            item_length++;
+                            saveItem();
+
+                            final NaverItem item = input.get(item_length-1);
+                            list_query.setText(item.query);
+                            list_url.setText(item.url);
+                            list_rank.setText("조회수 " + item.countClicked + "회 (현재 " + item.rank + "위)");
+                            list_category.setText("유형: "+item.getKindStr());
+                            list_delete.setOnClickListener(new View.OnClickListener() {
+                                public void onClick(View v) {
+                                    listView.removeView(list);
+                                    input.remove(item);
+                                    item_length--;
+                                    saveItem();
+                                }
+                            });
+                            list_modify.setOnClickListener(new View.OnClickListener() {
+                                public void onClick(View v) {
+                                    final View dialog = getLayoutInflater().inflate(R.layout.add, null);
+                                    Spinner combo = (Spinner)dialog.findViewById(R.id.combo_spinner);
+                                    EditText url = (EditText)dialog.findViewById(R.id.combo_editText_url);
+                                    EditText query = (EditText)dialog.findViewById(R.id.combo_editText_query);
+                                    ArrayAdapter adapter = ArrayAdapter.createFromResource(MainActivity.this, R.array.combo, android.R.layout.simple_spinner_item);
+                                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                    combo.setAdapter(adapter);
+
+                                    url.setText(item.url);
+                                    query.setText(item.query);
+                                    combo.setSelection(item.kind);
+
+                                    new AlertDialog.Builder(MainActivity.this)
+                                            .setTitle("수정")
+                                            .setView(dialog)
+                                            .setPositiveButton("확인", new DialogInterface.OnClickListener(){
+                                                public void onClick(DialogInterface ar0, int ar1) {
+                                                    EditText query = (EditText) dialog.findViewById(R.id.combo_editText_query);
+                                                    EditText url = (EditText) dialog.findViewById(R.id.combo_editText_url);
+                                                    Spinner kind = (Spinner) dialog.findViewById(R.id.combo_spinner);
+                                                    int index = input.indexOf(item);
+                                                    View v = listView.getChildAt(index);
+                                                    TextView v_query = (TextView) v.findViewById(R.id.list_textView_query);
+                                                    TextView v_url = (TextView) v.findViewById(R.id.list_textView_url);
+                                                    TextView v_rank = (TextView) v.findViewById(R.id.list_textView_rank);
+                                                    v_query.setText(query.getText().toString());
+                                                    v_url.setText(url.getText().toString());
+                                                    input.set(index, new NaverItem(query.getText().toString(), url.getText().toString(), 0, kind.getSelectedItemPosition()));
+                                                    saveItem();
+                                                }
+                                            })
+                                            .show();
+                                }
+                            });
+                            listView.addView(list);
+
+                        }
+                    }
+                })
+                .setNegativeButton("취소", null).show();
+                */
+        Toast.makeText(this, "지쳐쓰러짐", Toast.LENGTH_SHORT).show();
+    }
+
+    public void saveItem(){
         SharedPreferences.Editor editor = pref.edit();
-        for(int i=0; i<max_item; i++){
-            editor.putString("query_url_"+i, input.get(i).query);
-            editor.putString("url_"+i, input.get(i).url);
+        editor.clear();
+        for(int i=0; i<item_length; i++){
+            NaverItem current = input.get(i);
+            editor.putString("query_" + i, current.query);
+            editor.putString("url_" + i, current.url);
+            editor.putInt("kind_" + i, current.kind);
         }
+
         editor.putInt("time", Integer.parseInt(time.getText().toString()));
+        editor.putInt("length", item_length);
+
+
         editor.commit();
+    }
+
+    private View.OnClickListener modifyListener = new View.OnClickListener(){
+        public void onClick(View v){
+            final int index = Integer.parseInt(v.getTag().toString());
+            final View dialog = getLayoutInflater().inflate(R.layout.add, null);
+            final Spinner combo = (Spinner)dialog.findViewById(R.id.combo_spinner);
+            final EditText url = (EditText)dialog.findViewById(R.id.combo_editText_url);
+            final EditText query = (EditText)dialog.findViewById(R.id.combo_editText_query);
+            ArrayAdapter adapter = ArrayAdapter.createFromResource(MainActivity.this, R.array.combo, android.R.layout.simple_spinner_item);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            combo.setAdapter(adapter);
+
+            NaverItem item = input.get(index);
+            url.setText(item.url);
+            query.setText(item.query);
+            combo.setSelection(item.kind);
+
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("수정")
+                    .setView(dialog)
+                    .setPositiveButton("확인", new DialogInterface.OnClickListener(){
+                        public void onClick(DialogInterface ar0, int ar1) {
+                            input.set(index, new NaverItem(query.getText().toString(), url.getText().toString(), 0, combo.getSelectedItemPosition()));
+                            Adapter.notifyDataSetChanged();
+                            saveItem();
+                        }
+                    })
+                    .show();
+        }
+    };
+
+    private View.OnClickListener deleteListener = new View.OnClickListener(){
+        public void onClick(View v){
+            final int index = Integer.parseInt(v.getTag().toString());
+            input.remove(index);
+            item_length--;
+            Adapter.notifyDataSetChanged();
+            saveItem();
+            for(int i=index; i<item_length; i++){
+                v.setTag(i+1);
+                //Toast.makeText(MainActivity.this, i+"changed to "+(i+1), Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    public void createView(){
+        listView = (ListView)findViewById(R.id.activity_main_listView_ListView);
+        Adapter = new NaverAdapter(this, R.layout.list, input, modifyListener, deleteListener);
+        listView.setAdapter(Adapter);
+
+        time = (EditText)findViewById(R.id.activity_main_editText_Time);
+        time.setText(pref.getInt("time", 60)+"");
+
+        /*
+        for(int i = 0; i<item_length; i++){
+            final LinearLayout list = (LinearLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.list, listView, false);
+            TextView list_query = (TextView) list.findViewById(R.id.list_textView_query);
+            TextView list_url = (TextView) list.findViewById(R.id.list_textView_url);
+            TextView list_rank = (TextView) list.findViewById(R.id.list_textView_rank);
+            TextView list_category = (TextView) list.findViewById(R.id.list_textView_category);
+            Button list_modify = (Button) list.findViewById(R.id.list_button_modify);
+            final Button list_delete = (Button) list.findViewById(R.id.list_button_delete);
+`
+            final NaverItem item = input.get(i);
+            list_query.setText(item.query);
+            list_url.setText(item.url);
+            list_rank.setText("조회수 " + item.countClicked + "회 (현재 " + item.rank + "위)");
+            list_rank.setText("유형: "+ "");
+            list_delete.setId(i);
+
+            list_delete.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    int index = list_delete.getId();
+                    listView.removeViewAt(index);
+                    input.remove(index);
+                    item_length--;
+                    for(int j=index; j<item_length; j++)
+                        list_delete.setId(j);
+                    saveItem();
+                }
+            });
+            list_modify.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    final View dialog = getLayoutInflater().inflate(R.layout.add, null);
+                    Spinner combo = (Spinner)dialog.findViewById(R.id.combo_spinner);
+                    EditText url = (EditText)dialog.findViewById(R.id.combo_editText_url);
+                    EditText query = (EditText)dialog.findViewById(R.id.combo_editText_query);
+                    ArrayAdapter adapter = ArrayAdapter.createFromResource(MainActivity.this, R.array.combo, android.R.layout.simple_spinner_item);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    combo.setAdapter(adapter);
+
+                    url.setText(item.url);
+                    query.setText(item.query);
+                    combo.setSelection(item.kind);
+
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("수정")
+                            .setView(dialog)
+                            .setPositiveButton("확인", new DialogInterface.OnClickListener(){
+                                public void onClick(DialogInterface ar0, int ar1) {
+                                    EditText query = (EditText) dialog.findViewById(R.id.combo_editText_query);
+                                    EditText url = (EditText) dialog.findViewById(R.id.combo_editText_url);
+                                    Spinner kind = (Spinner) dialog.findViewById(R.id.combo_spinner);
+                                    int index = input.indexOf(item);
+                                    Toast.makeText(MainActivity.this, "m"+index, Toast.LENGTH_SHORT).show();
+                                    View v = listView.getChildAt(index);
+                                    TextView v_query = (TextView) v.findViewById(R.id.list_textView_query);
+                                    TextView v_url = (TextView) v.findViewById(R.id.list_textView_url);
+                                    TextView v_rank = (TextView) v.findViewById(R.id.list_textView_rank);
+                                    v_query.setText(query.getText().toString());
+                                    v_url.setText(url.getText().toString());
+                                    input.set(index, new NaverItem(query.getText().toString(), url.getText().toString(), 0, kind.getSelectedItemPosition()));
+                                    saveItem();
+                                }
+                            })
+                            .show();
+                }
+            });
+            listView.addView(list);
+        }*/
     }
 
     public void changePassword(View v){
@@ -448,7 +703,8 @@ public class MainActivity extends ActionBarActivity implements TabListener {
 
                     @Override
                     public void onViewCreated(View view, Bundle savedInstanceState) {
-                        listView = (LinearLayout)findViewById(R.id.activity_main_listView_ListView);
+                        createView();
+                        /*listView = (LinearLayout)findViewById(R.id.activity_main_listView_ListView);
                         time = (EditText)findViewById(R.id.activity_main_editText_Time);
                         time.setText(pref.getInt("time", 60)+"");
 
@@ -482,7 +738,7 @@ public class MainActivity extends ActionBarActivity implements TabListener {
                                 @Override public void afterTextChanged(Editable s) {}
                             });
                             listView.addView(list);
-                        }
+                        }*/
                     };
                 };
             }

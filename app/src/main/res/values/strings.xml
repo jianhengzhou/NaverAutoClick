@@ -5,5 +5,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_view">MainActivity</string>
+    <string name="combo">유형선택</string>
 
 </resources>
